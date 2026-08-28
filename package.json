@@ -1,0 +1,46 @@
+{
+  "name": "pi-cloakrs-extension",
+  "version": "0.1.0",
+  "description": "Local PII redaction for Pi powered by cloakrs",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "redaction",
+    "pii",
+    "bsn",
+    "cloakrs"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "postinstall": "node scripts/install-cloakrs.js",
+    "test": "node --test"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    }
+  },
+  "pi": {
+    "extensions": [
+      "./extensions/pi-cloakrs.js"
+    ]
+  },
+  "files": [
+    "extensions",
+    "src",
+    "scripts",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/etiennetremel/pi-cloakrs-extension.git"
+  }
+}
