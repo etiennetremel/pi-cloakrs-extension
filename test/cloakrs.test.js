@@ -62,6 +62,10 @@ test("keeps home-directory paths usable without exposing the username", async ()
     hideHomePath("read C:\\Users\\Alice2\\file", "C:\\Users\\Alice", "win32"),
     "read C:\\Users\\Alice2\\file",
   );
+  assert.equal(
+    hideHomePath("read /Users/alice2/file", "/Users/alice", "darwin"),
+    "read /Users/alice2/file",
+  );
 });
 
 test("redacts text items without changing images", async () => {
@@ -109,6 +113,16 @@ test("redacts PII in tool argument object keys", async () => {
   }]);
 
   assert.deepEqual(result[0].content[0].arguments, { "[EMAIL]": true });
+
+  await assert.rejects(redactMessages([{
+    role: "assistant",
+    content: [{
+      type: "toolCall",
+      id: "2",
+      name: "lookup",
+      arguments: { [email]: 1, ["bob" + "@" + "example.com"]: 2 },
+    }],
+  }]), /duplicate object key/);
 });
 
 test("enforces timeout when cloakrs ignores SIGTERM", async () => {

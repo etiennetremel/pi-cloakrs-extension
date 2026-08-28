@@ -22,7 +22,8 @@ let activeRedactions = 0;
 export function hideHomePath(value, home = homedir(), platform = process.platform) {
   if (!home || home === "/") return value;
   if (platform !== "win32") {
-    return value.replaceAll(home, "~").replaceAll(home.replaceAll("\\", "/"), "~");
+    const pattern = home.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return value.replace(new RegExp(`${pattern}(?=$|/)`, "g"), "~");
   }
 
   const pattern = home
@@ -236,6 +237,15 @@ function cloneMessagesAndLocations(messages, includeToolArguments) {
   return { result, locations };
 }
 
+function renameKey(parent, key, replacement) {
+  if (replacement !== key && Object.hasOwn(parent, replacement)) {
+    throw new Error(`redaction would create duplicate object key: ${replacement}`);
+  }
+  const value = parent[key];
+  delete parent[key];
+  parent[replacement] = value;
+}
+
 export async function redactMessages(messages, {
   includeToolArguments = true,
   ...options
@@ -249,9 +259,7 @@ export async function redactMessages(messages, {
   locations.forEach(([parent, key, isKey], index) => {
     if (masked[index] === texts[index]) return;
     if (isKey) {
-      const value = parent[key];
-      delete parent[key];
-      parent[masked[index]] = value;
+      renameKey(parent, key, masked[index]);
     } else {
       parent[key] = masked[index];
     }
@@ -264,9 +272,7 @@ export function withholdMessages(messages) {
   const { result, locations } = cloneMessagesAndLocations(messages, true);
   locations.forEach(([parent, key, isKey]) => {
     if (isKey) {
-      const value = parent[key];
-      delete parent[key];
-      parent[WITHHELD] = value;
+      renameKey(parent, key, WITHHELD);
     } else {
       parent[key] = WITHHELD;
     }
