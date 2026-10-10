@@ -37,6 +37,10 @@ export function cloakrsBinary() {
   return process.env.PI_CLOAKRS_BINARY || (existsSync(bundledBinary) ? bundledBinary : "cloakrs");
 }
 
+export function cloakrsExcludedEntities() {
+  return (process.env.PI_CLOAKRS_EXCLUDE_ENTITIES ?? "url,hostname").trim();
+}
+
 export function redactStrings(values, { timeoutMs = 5_000, signal } = {}) {
   if (!Array.isArray(values)) {
     return Promise.reject(new TypeError("redactStrings expects an array of strings"));
@@ -63,12 +67,14 @@ export function redactStrings(values, { timeoutMs = 5_000, signal } = {}) {
     return Promise.reject(new Error(`serialized redaction input exceeds ${MAX_INPUT_BYTES} bytes`));
   }
 
+  const exclusions = cloakrsExcludedEntities();
   return new Promise((resolve, reject) => {
     const child = spawn(cloakrsBinary(), [
       "--locale", process.env.PI_CLOAKRS_LOCALE || "nl",
       "--strategy", "redact",
       "--min-confidence", process.env.PI_CLOAKRS_MIN_CONFIDENCE || "0.35",
       "--quiet",
+      ...(exclusions ? ["--exclude-entities", exclusions] : []),
       "stream",
     ], { stdio: ["pipe", "pipe", "pipe"] });
     activeRedactions++;

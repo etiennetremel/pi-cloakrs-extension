@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
-const VERSION = "v0.3.0";
+const VERSION = "v0.4.0";
 const MAX_ARCHIVE_BYTES = 32 * 1024 * 1024;
 const DOWNLOAD_TIMEOUT_MS = 60_000;
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -18,12 +18,12 @@ if (process.env.PI_CLOAKRS_SKIP_DOWNLOAD === "1") {
 const isMusl = process.platform === "linux" && !process.report?.getReport().header.glibcVersionRuntime;
 const key = `${process.platform}-${process.arch}${isMusl ? "-musl" : ""}`;
 const targets = {
-  "darwin-arm64": ["aarch64-apple-darwin", "a789e3ec9343ddabac63fe581a79b822b8ca8ed46432351684e03eac17a0667f"],
-  "darwin-x64": ["x86_64-apple-darwin", "f058828268928b52340e23e4b8794d90d07cdb3c1a8baadd6bc3116fdfe836f3"],
-  "linux-arm64": ["aarch64-unknown-linux-gnu", "d03dfb60f6cc07d3780f15de308cef8c4f235cd59dcbaecbfee477611e4fb961"],
-  "linux-x64": ["x86_64-unknown-linux-gnu", "ee711247b0153e6bb09294cab6aa36db32fe33547d2c56346c57130cc164d9fd"],
-  "linux-x64-musl": ["x86_64-unknown-linux-musl", "6debafdc8aa951248561ef0fe0e4b92ef5b0b821eee15a3b5d9672bd8ac22f9a"],
-  "win32-x64": ["x86_64-pc-windows-msvc", "5fcdbba152ee88ea6db08449e88f63b8e2c37758534baf0e7c3bcde4a634d448"],
+  "darwin-arm64": ["aarch64-apple-darwin", "0f0ba154ea426f845b513b25b8b916c5460ac7961ed53582f11bee4aadd24f08"],
+  "darwin-x64": ["x86_64-apple-darwin", "1aa36f838b4246104c421423c595083f8d66ab9c4df21f72b0011221ea74eec8"],
+  "linux-arm64": ["aarch64-unknown-linux-gnu", "0e12e0a547becabef582bfbb1460a72191b187cd64d6ce8c5972c7422ff83eea"],
+  "linux-x64": ["x86_64-unknown-linux-gnu", "922dbdfa301d91e6461653d83b34b82c70c8ef95a607a51ebb2dc0450c65ad48"],
+  "linux-x64-musl": ["x86_64-unknown-linux-musl", "da9f9b95e15b3a4577a58962f80132c89618b821ee764c5df032dd7b3cb173da"],
+  "win32-x64": ["x86_64-pc-windows-msvc", "11159a5859f3a62b3ce863c5e90f4a31f839617572b835b4cd130aa588577ca0"],
 };
 if (!targets[key]) throw new Error(`cloakrs has no release binary for ${key}`);
 const [target, expected] = targets[key];

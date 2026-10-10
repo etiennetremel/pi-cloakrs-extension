@@ -5,6 +5,7 @@
 import { createLocalBashOperations } from "@earendil-works/pi-coding-agent";
 import {
   cloakrsBinary,
+  cloakrsExcludedEntities,
   redactBashOperations,
   redactContent,
   redactContextMessages,
@@ -87,16 +88,21 @@ export default function (pi) {
   });
 
   pi.registerCommand("cloakrs-status", {
-    description: "Show the bundled cloakrs version and redaction settings",
+    description: "Show the cloakrs binary, version, and redaction settings",
     handler: async (_args, ctx) => {
-      const result = await pi.exec(cloakrsBinary(), ["--version"], {
-        timeout: 5_000,
-      });
-      const version = result.code === 0 ? result.stdout.trim() : "bundled binary active";
-      ctx.ui.notify(
-        `${version}; locale=${process.env.PI_CLOAKRS_LOCALE || "nl"}; min-confidence=${process.env.PI_CLOAKRS_MIN_CONFIDENCE || "0.35"}`,
-        "info",
-      );
+      const binary = cloakrsBinary();
+      try {
+        const result = await pi.exec(binary, ["--version"], { timeout: 5_000 });
+        if (result.code !== 0 || result.killed) {
+          throw new Error(result.stderr.trim() || `version check failed (exit=${result.code}, killed=${result.killed})`);
+        }
+        ctx.ui.notify(
+          `${result.stdout.trim()}; binary=${binary}; locale=${process.env.PI_CLOAKRS_LOCALE || "nl"}; min-confidence=${process.env.PI_CLOAKRS_MIN_CONFIDENCE || "0.35"}; exclude-entities=${cloakrsExcludedEntities() || "none"} (CLI; cloakrs config may add exclusions)`,
+          "info",
+        );
+      } catch (error) {
+        ctx.ui.notify(`cloakrs unavailable; binary=${binary}: ${error}`, "error");
+      }
     },
   });
 }
