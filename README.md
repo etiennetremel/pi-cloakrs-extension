@@ -4,11 +4,21 @@ Local PII redaction for [Pi](https://github.com/earendil-works/pi), powered by [
 
 ## Install
 
+Install the [npm package](https://www.npmjs.com/pi-cloakrs-extension):
+
+```bash
+pi install npm:pi-cloakrs-extension
+```
+
+Append `@<version>` for a reproducible install, for example `pi install npm:pi-cloakrs-extension@0.2.0`.
+
+Alternatively, install from Git to track the default branch:
+
 ```bash
 pi install git:github.com/etiennetremel/pi-cloakrs-extension
 ```
 
-This tracks the default branch. Append `@<tag-or-commit>` for a reproducible install.
+Append `@<tag-or-commit>` to pin the Git install.
 
 Installation downloads cloakrs v0.4.0 for macOS (arm64/x64), glibc Linux (arm64/x64), x64 musl Linux, or x64 Windows, verifies a pinned checksum, and stores the binary inside this package. Rust is not required.
 
