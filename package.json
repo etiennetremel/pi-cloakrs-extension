@@ -1,6 +1,6 @@
 {
   "name": "pi-cloakrs-extension",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Local PII redaction for Pi powered by cloakrs",
   "keywords": [
     "pi-package",
